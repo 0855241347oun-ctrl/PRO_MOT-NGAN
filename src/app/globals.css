@@ -1,0 +1,99 @@
+@import "tailwindcss";
+
+@theme {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+}
+
+/* ─── Custom Styles ──────────────────────────────── */
+
+@layer base {
+  :root {
+    --background: #f8fafc;
+    --foreground: #0f172a;
+    --card: #ffffff;
+    --card-foreground: #0f172a;
+    --border: #e2e8f0;
+    --input: #cbd5e1;
+    --primary: #06b6d4;
+    --primary-foreground: #ffffff;
+    --muted: #f1f5f9;
+    --muted-foreground: #64748b;
+  }
+
+  .dark {
+    --background: #020617;
+    --foreground: #f8fafc;
+    --card: #1e293b;
+    --card-foreground: #f8fafc;
+    --border: #334155;
+    --input: #475569;
+    --primary: #06b6d4;
+    --primary-foreground: #ffffff;
+    --muted: #0f172a;
+    --muted-foreground: #94a3b8;
+  }
+
+  body {
+    background-color: var(--background);
+    color: var(--foreground);
+    @apply antialiased transition-colors duration-300;
+  }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: 3px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--input);
+  }
+}
+
+/* ─── Animate-in utilities ───────────────────────── */
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes zoom-in-95 {
+  from { transform: scale(0.95); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+@keyframes slide-in-from-bottom-4 {
+  from { transform: translateY(16px); }
+  to { transform: translateY(0); }
+}
+
+.animate-in {
+  animation-duration: 200ms;
+  animation-fill-mode: both;
+}
+
+.fade-in {
+  animation-name: fade-in;
+}
+
+.zoom-in-95 {
+  animation-name: zoom-in-95;
+}
+
+.slide-in-from-bottom-4 {
+  animation-name: slide-in-from-bottom-4;
+}

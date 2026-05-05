@@ -1,0 +1,40 @@
+{
+  "name": "my-dashboard",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "db:push": "prisma db push",
+    "db:generate": "prisma generate",
+    "db:studio": "prisma studio",
+    "db:seed": "tsx prisma/seed.ts"
+  },
+  "dependencies": {
+    "@prisma/client": "^6.2.0",
+    "clsx": "^2.1.1",
+    "lucide-react": "^0.469.0",
+    "next": "^15.1.0",
+    "next-themes": "^0.4.6",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "recharts": "^2.15.0",
+    "tailwind-merge": "^2.6.0",
+    "zod": "^3.24.0"
+  },
+  "devDependencies": {
+    "@eslint/eslintrc": "^3.2.0",
+    "@tailwindcss/postcss": "^4.0.0",
+    "@types/node": "^22.0.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "eslint": "^9.0.0",
+    "eslint-config-next": "^15.1.0",
+    "postcss": "^8.5.0",
+    "prisma": "^6.2.0",
+    "tailwindcss": "^4.0.0",
+    "typescript": "^5.7.0"
+  }
+}
