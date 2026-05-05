@@ -32,7 +32,7 @@ export default function SummaryCards({ stats, loading }: SummaryCardsProps) {
           <div>
             <p className="text-sm text-muted-foreground">จำนวนเนื้อหาทั้งหมด</p>
             <p className="mt-2 text-2xl font-bold text-foreground">
-              {stats ? stats.totalRecords.toLocaleString() : "1,284"}
+              {stats?.totalRecords?.toLocaleString() ?? "0"}
             </p>
           </div>
           <div className="rounded-xl bg-gradient-to-br from-primary to-blue-600 p-2.5 shadow-lg shadow-primary/20">
@@ -41,13 +41,13 @@ export default function SummaryCards({ stats, loading }: SummaryCardsProps) {
         </div>
       </Card>
 
-      {/* Users card (Mock) */}
+      {/* Users card (Mocked for now) */}
       <Card hover>
         <div className="flex items-start justify-between">
           <div>
             <p className="text-sm text-muted-foreground">ผู้ใช้งานออนไลน์</p>
             <p className="mt-2 text-2xl font-bold text-foreground">
-              {stats ? "42" : "156"}
+              {stats ? "0" : "0"}
             </p>
           </div>
           <div className="rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 p-2.5 shadow-lg shadow-emerald-500/20">
@@ -56,13 +56,13 @@ export default function SummaryCards({ stats, loading }: SummaryCardsProps) {
         </div>
       </Card>
 
-      {/* Views card (Mock) */}
+      {/* Views card (Mocked for now) */}
       <Card hover>
         <div className="flex items-start justify-between">
           <div>
             <p className="text-sm text-muted-foreground">ยอดการเข้าชมวันนี้</p>
             <p className="mt-2 text-2xl font-bold text-foreground">
-              {stats ? "8.4K" : "12.8K"}
+              {stats ? "0" : "0"}
             </p>
           </div>
           <div className="rounded-xl bg-gradient-to-br from-purple-500 to-pink-600 p-2.5 shadow-lg shadow-purple-500/20">
@@ -71,13 +71,13 @@ export default function SummaryCards({ stats, loading }: SummaryCardsProps) {
         </div>
       </Card>
 
-      {/* Categories card (Mock) */}
+      {/* Categories card (Mocked for now) */}
       <Card hover>
         <div className="flex items-start justify-between">
           <div>
             <p className="text-sm text-muted-foreground">หมวดหมู่ทั้งหมด</p>
             <p className="mt-2 text-2xl font-bold text-foreground">
-              {stats ? "12" : "24"}
+              {stats ? "0" : "0"}
             </p>
           </div>
           <div className="rounded-xl bg-gradient-to-br from-orange-500 to-amber-600 p-2.5 shadow-lg shadow-orange-500/20">
