@@ -1,14 +1,119 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import Card from "@/components/ui/Card";
 import Button from "@/components/ui/Button";
-import { User, Bell, Globe, Palette, Database, Camera } from "lucide-react";
+import { User, Bell, Globe, Palette, Database, Camera, Loader2 } from "lucide-react";
 import { H1, H2, TextPrimary, TextSecondary } from "@/components/ui/Typography";
+import { createClient } from "@/lib/supabase/client";
+
+interface UserProfile {
+  id: string;
+  full_name: string | null;
+  email: string | null;
+  role: string | null;
+  avatar_url: string | null;
+}
 
 export default function SettingsPage() {
+  const supabase = createClient();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  
+  const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isUploading, setIsUploading] = useState(false);
+
+  useEffect(() => {
+    getProfile();
+  }, []);
+
+  async function getProfile() {
+    try {
+      setIsLoading(true);
+      const { data: { user } } = await supabase.auth.getUser();
+
+      if (user) {
+        const { data, error } = await supabase
+          .from("profiles")
+          .select("*")
+          .eq("id", user.id)
+          .single();
+
+        if (data) {
+          setProfile({
+            id: user.id,
+            full_name: data.full_name,
+            email: user.email || null,
+            role: data.role,
+            avatar_url: data.avatar_url,
+          });
+        }
+      }
+    } catch (error) {
+      console.error("Error fetching profile:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  const handleImageClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file || !profile) return;
+
+    try {
+      setIsUploading(true);
+
+      // 1. Upload to Supabase Storage
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${profile.id}-${Math.random()}.${fileExt}`;
+      const filePath = `${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('avatars')
+        .upload(filePath, file);
+
+      if (uploadError) throw uploadError;
+
+      // 2. Get Public URL
+      const { data: { publicUrl } } = supabase.storage
+        .from('avatars')
+        .getPublicUrl(filePath);
+
+      // 3. Update profiles table
+      const { error: updateError } = await supabase
+        .from('profiles')
+        .update({ avatar_url: publicUrl })
+        .eq('id', profile.id);
+
+      if (updateError) throw updateError;
+
+      // 4. Update local state
+      setProfile({ ...profile, avatar_url: publicUrl });
+      alert("อัปเดตรูปโปรไฟล์สำเร็จ!");
+
+    } catch (error: any) {
+      console.error("Error uploading image:", error);
+      alert("เกิดข้อผิดพลาดในการอัปโหลด: " + error.message);
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
   return (
     <div className="space-y-6">
+      {/* Hidden File Input */}
+      <input
+        type="file"
+        ref={fileInputRef}
+        onChange={handleImageUpload}
+        accept="image/*"
+        className="hidden"
+      />
+
       {/* Page header */}
       <div>
         <H1>ตั้งค่า</H1>
@@ -22,24 +127,52 @@ export default function SettingsPage() {
         <Card className="lg:col-span-1">
           <div className="flex flex-col items-center p-4">
             <div className="relative mb-4">
-              <div className="flex h-24 w-24 items-center justify-center rounded-full bg-gradient-to-br from-primary to-blue-600 shadow-xl">
-                <User size={40} className="text-primary-foreground" />
+              <div className="group relative flex h-24 w-24 items-center justify-center rounded-full bg-gradient-to-br from-primary to-blue-600 shadow-xl overflow-hidden border-4 border-background/50">
+                {isUploading ? (
+                  <div className="absolute inset-0 flex items-center justify-center bg-black/40 backdrop-blur-sm z-10">
+                    <Loader2 className="h-6 w-6 animate-spin text-white" />
+                  </div>
+                ) : null}
+                
+                {profile?.avatar_url ? (
+                  <img src={profile.avatar_url} alt="Profile" className="h-full w-full object-cover" />
+                ) : (
+                  <User size={40} className="text-primary-foreground" />
+                )}
               </div>
-              <button className="absolute bottom-0 right-0 rounded-full bg-background p-2 text-muted-foreground shadow-lg hover:text-primary">
+              <button 
+                onClick={handleImageClick}
+                disabled={isUploading}
+                className="absolute bottom-0 right-0 rounded-full bg-background p-2 text-muted-foreground shadow-lg hover:text-primary hover:scale-110 transition-all border border-border"
+              >
                 <Camera size={16} />
               </button>
             </div>
-            <H2 className="mb-1 text-center">Admin User</H2>
-            <TextSecondary className="text-center">admin@company.com</TextSecondary>
+            
+            {isLoading ? (
+              <div className="flex flex-col items-center space-y-2">
+                <Loader2 className="h-6 w-6 animate-spin text-primary" />
+                <TextSecondary>กำลังโหลด...</TextSecondary>
+              </div>
+            ) : (
+              <>
+                <H2 className="mb-1 text-center">{profile?.full_name || "ไม่ระบุชื่อ"}</H2>
+                <TextSecondary className="text-center">{profile?.email || "ไม่มีอีเมล"}</TextSecondary>
+                <div className="mt-2 rounded-full bg-primary/10 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-primary">
+                  {profile?.role || "user"}
+                </div>
+              </>
+            )}
+
             <Button className="mt-6 w-full" variant="outline">
-              แก้ไขโปรไฟล์
+              แก้ไขข้อมูลส่วนตัว
             </Button>
           </div>
         </Card>
 
         {/* Settings Sections */}
         <div className="space-y-6 lg:col-span-2">
-          {/* General */}
+          {/* General Settings */}
           <Card>
             <div className="mb-4 flex items-center gap-3 border-b border-border pb-4">
               <div className="rounded-lg bg-primary/20 p-2 text-primary">
@@ -74,33 +207,23 @@ export default function SettingsPage() {
               <ToggleRow label="ส่งรายงานสรุปรายสัปดาห์ผ่านอีเมล" />
             </div>
           </Card>
-          {/* Database Info */}
+
+          {/* Storage Info */}
           <Card>
             <div className="mb-4 flex items-center gap-3 border-b border-border pb-4">
               <div className="rounded-lg bg-emerald-500/20 p-2 text-emerald-500">
                 <Database size={18} />
               </div>
-              <H2>ฐานข้อมูล</H2>
+              <H2>ระบบจัดเก็บไฟล์</H2>
             </div>
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="flex flex-col rounded-lg bg-muted/50 p-3">
-                <TextSecondary>สถานะ</TextSecondary>
-                <div className="mt-1 flex items-center gap-2 text-foreground">
-                  <div className="h-2 w-2 rounded-full bg-emerald-500" />
-                  Connected
-                </div>
+                <TextSecondary>Bucket Name</TextSecondary>
+                <TextPrimary>avatars</TextPrimary>
               </div>
               <div className="flex flex-col rounded-lg bg-muted/50 p-3">
-                <TextSecondary>Provider</TextSecondary>
-                <TextPrimary>SQLite / PostgreSQL</TextPrimary>
-              </div>
-              <div className="flex flex-col rounded-lg bg-muted/50 p-3">
-                <TextSecondary>ORM</TextSecondary>
-                <TextPrimary>Prisma</TextPrimary>
-              </div>
-              <div className="flex flex-col rounded-lg bg-muted/50 p-3">
-                <TextSecondary>Last Backup</TextSecondary>
-                <TextPrimary>1 ชั่วโมงที่แล้ว</TextPrimary>
+                <TextSecondary>Storage Provider</TextSecondary>
+                <TextPrimary>Supabase Storage</TextPrimary>
               </div>
             </div>
           </Card>

@@ -67,7 +67,7 @@ export default function RecordForm({
         {isEditing ? "แก้ไขเนื้อหา" : "เพิ่มเนื้อหาใหม่"}
       </h2>
 
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-4" autoComplete="off">
         <Input
           id="h1"
           name="h1"
@@ -104,6 +104,7 @@ export default function RecordForm({
             id="content1"
             name="content1"
             rows={4}
+            autoComplete="off"
             value={form.content1}
             onChange={handleChange}
             placeholder="เนื้อหาหลักส่วนที่ 1..."
@@ -119,6 +120,7 @@ export default function RecordForm({
             id="content2"
             name="content2"
             rows={4}
+            autoComplete="off"
             value={form.content2}
             onChange={handleChange}
             placeholder="เนื้อหาหลักส่วนที่ 2..."

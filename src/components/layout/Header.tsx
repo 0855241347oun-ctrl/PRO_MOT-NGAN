@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
@@ -14,9 +14,11 @@ import {
   Users,
   Menu,
   X,
+  LogOut,
 } from "lucide-react";
 import Image from "next/image";
 import LogoImg from "./MOT ICON (2).png";
+import { createClient } from "@/lib/supabase/client";
 
 const navItems = [
   { href: "/view", label: "Dashboard", icon: BarChart3 },
@@ -28,7 +30,18 @@ const navItems = [
 
 export default function Header() {
   const pathname = usePathname();
+  const router = useRouter();
+  const supabase = createClient();
   const [mobileOpen, setMobileOpen] = useState(false);
+
+  // Hide header on login and register pages
+  if (pathname === "/login" || pathname === "/register") return null;
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    router.push("/login");
+    router.refresh();
+  };
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 border-b border-border bg-background/70 backdrop-blur-2xl">
@@ -82,6 +95,16 @@ export default function Header() {
             {/* Theme Toggle */}
             <ThemeToggle />
 
+            {/* Logout Button (Desktop) */}
+            <button
+              onClick={handleLogout}
+              className="hidden md:flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-medium text-red-500 hover:bg-red-500/10 transition-all duration-200"
+              title="ออกจากระบบ"
+            >
+              <LogOut size={16} />
+              <span>ออกจากระบบ</span>
+            </button>
+
             {/* Mobile hamburger */}
             <button
               onClick={() => setMobileOpen(!mobileOpen)}
@@ -120,6 +143,15 @@ export default function Header() {
                 </Link>
               );
             })}
+            
+            {/* Logout Button (Mobile) */}
+            <button
+              onClick={handleLogout}
+              className="w-full flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium text-red-500 hover:bg-red-500/10 transition-all"
+            >
+              <LogOut size={18} />
+              ออกจากระบบ
+            </button>
           </nav>
         </>
       )}
