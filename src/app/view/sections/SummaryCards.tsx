@@ -71,21 +71,6 @@ export default function SummaryCards({ stats, loading }: SummaryCardsProps) {
         </div>
       </Card>
 
-      {/* Premium Wealth Card */}
-      <Card className="relative overflow-hidden border-none bg-premium text-white shadow-xl shadow-gold/20">
-        <div className="absolute -right-4 -top-4 h-24 w-24 rounded-full bg-white/10 blur-2xl" />
-        <div className="relative z-10 flex items-start justify-between">
-          <div>
-            <p className="text-sm font-medium text-white/80">ระบบระดับพรีเมียม (Premium Status)</p>
-            <p className="mt-2 text-2xl font-black tracking-tight">
-              ACTIVE & RICH
-            </p>
-          </div>
-          <div className="rounded-xl bg-white/20 p-2.5 backdrop-blur-md">
-            <Share2 size={20} className="text-white" />
-          </div>
-        </div>
-      </Card>
 
       {/* Categories card (Mocked for now) */}
       <Card hover>
