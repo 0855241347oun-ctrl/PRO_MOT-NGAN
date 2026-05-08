@@ -54,6 +54,11 @@
     @apply antialiased transition-colors duration-300;
   }
 
+  main {
+    content-visibility: auto;
+    contain-intrinsic-size: 0 500px;
+  }
+
   /* Custom scrollbar */
   ::-webkit-scrollbar {
     width: 6px;
