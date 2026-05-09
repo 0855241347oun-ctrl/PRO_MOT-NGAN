@@ -48,6 +48,7 @@ export default function RegisterPage() {
           data: {
             full_name: fullName,
             role: role,
+            email: email,
           },
         },
       });
